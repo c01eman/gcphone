@@ -56,16 +56,26 @@ function newPhoneProp()
 	while not HasModelLoaded(phoneModel) do
 		Citizen.Wait(1)
 	end
-	phoneProp = CreateObject(phoneModel, 1.0, 1.0, 1.0, 1, 1, 0)
+	phoneProp = CreateObjectNoOffset(phoneModel, 1.0, 1.0, 1.0, 1, 1, 0)
 	local bone = GetPedBoneIndex(myPedId, 28422)
 	AttachEntityToEntity(phoneProp, myPedId, bone, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0, 2, 1)
 end
 
 function deletePhone ()
-	if phoneProp ~= 0 then
-		Citizen.InvokeNative(0xAE3CBE5BF394C9C9 , Citizen.PointerValueIntInitialized(phoneProp))
-		phoneProp = 0
-	end
+    if phoneProp ~= nil then
+        Citizen.InvokeNative(0xAE3CBE5BF394C9C9 , Citizen.PointerValueIntInitialized(phoneProp))
+        phoneProp = nil
+		Citizen.Wait(3000)
+		local playerPed = GetPlayerPed(-1)
+		local coords    = GetEntityCoords(playerPed)
+		local object = GetClosestObjectOfType(coords, 1.0, GetHashKey("prop_amb_phone"), false, false, false)
+		local object2 = GetClosestObjectOfType(coords, 1.0, GetHashKey("prop_cs_tablet"), false, false, false)
+		if object ~= nil or object2 ~= nil then
+			SetEntityAsMissionEntity(object, 1, 1)
+			DeleteEntity(object)
+			DeleteEntity(object2)
+		end
+    end
 end
 
 --[[

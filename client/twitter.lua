@@ -58,8 +58,7 @@ end)
 
 
 RegisterNUICallback('twitter_createAccount', function(data, cb)
-  local url = exports["mugshot"]:getMugshotUrl(GetPlayerPed(-1))
-  TriggerServerEvent('gcPhone:twitter_createAccount', data.username, data.password, url)
+  TriggerServerEvent('gcPhone:twitter_createAccount', data.username, data.password, data.avatarUrl)
 end)
 
 RegisterNUICallback('twitter_getTweets', function(data, cb)
@@ -79,6 +78,5 @@ RegisterNUICallback('twitter_toggleLikeTweet', function(data, cb)
 end)
 
 RegisterNUICallback('twitter_setAvatarUrl', function(data, cb)
-  local url = exports["mugshot"]:getMugshotUrl(GetPlayerPed(-1))
-  TriggerServerEvent('gcPhone:twitter_setAvatarUrl', data.username or '', data.password or '', url)
+  TriggerServerEvent('gcPhone:twitter_setAvatarUrl', data.username or '', data.password or '', data.avatarUrl)
 end)
