@@ -447,8 +447,8 @@ RegisterNUICallback('notififyUseRTC', function (use, cb)
 	if USE_RTC == true and inCall == true then
 		inCall = false
 		Citizen.InvokeNative(0xE036A705F989E049)
-    exports.tokovoip_script:removePlayerFromRadio(TokoVoipID)
-    TokoVoipID = nil
+		exports.tokovoip_script:removePlayerFromRadio(TokoVoipID)
+		TokoVoipID = nil
 	end
 	cb()
 end)
@@ -633,6 +633,7 @@ RegisterNUICallback('takePhoto', function(data, cb)
 	takePhoto = true
 	Citizen.Wait(0)
 	if hasFocus == true then
+		SetNuiFocus(false, false)
 		hasFocus = false
 	end
 	while takePhoto do
@@ -648,13 +649,20 @@ RegisterNUICallback('takePhoto', function(data, cb)
 			takePhoto = false
 			break
 			elseif IsControlJustPressed(1, 176) then -- TAKE.. PIC
-			exports['screenshot-basic']:requestScreenshotUpload(data.url, data.field, function(data)
+			exports['screenshot-basic']:requestScreenshotUpload(data.url, data.field,{
+				headers = {
+					['authorization'] = string.format('Client-ID %s', 'b06c925b3097192'),
+					['content-type'] = 'multipart/form-data'
+				}
+				},function(data)
 				local resp = json.decode(data)
 				DestroyMobilePhone()
 				CellCamActivate(false, false)
-				cb(json.encode({ url = resp.files[1].url })) 	
+				cb(json.encode({ url = resp.data.link  }))
+				PhonePlayAnim('text', false, true)
 			end)
 			takePhoto = false
+			SetNuiFocus(false, false)
 		end
 		HideHudComponentThisFrame(7)
 		HideHudComponentThisFrame(8)
@@ -665,4 +673,14 @@ RegisterNUICallback('takePhoto', function(data, cb)
 	end
 	Citizen.Wait(1000)
 	PhonePlayAnim('text', false, true)
+end)
+
+RegisterNUICallback('getMugshot', function(data, cb)
+while takePhoto do
+Citizen.Wait(0)
+
+local url = exports["mugshot"]:getMugshotUrl(GetPlayerPed(-1))
+cb(url)
+end
+Citizen.Wait(1000)
 end)
